@@ -58,19 +58,23 @@ func (uc *CategoryController) GetCategory(ctx *gin.Context) {
 	var categoryID string = ctx.Param("categoryId")
 	category, err := uc.CategoryService.GetCategory(&categoryID)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadGateway, res)
 		return
 	}
-	ctx.JSON(http.StatusOK, category)
+	res := utils.NewHTTPResponse(http.StatusOK, category)
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (uc *CategoryController) GetCategories(ctx *gin.Context) {
 	categories, err := uc.CategoryService.GetCategories()
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadGateway, res)
 		return
 	}
-	ctx.JSON(http.StatusOK, categories)
+	res := utils.NewHTTPResponse(http.StatusOK, categories)
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (uc *CategoryController) UpdateCategory(ctx *gin.Context) {
@@ -78,30 +82,36 @@ func (uc *CategoryController) UpdateCategory(ctx *gin.Context) {
 	var categoryID string = ctx.Param("categoryId")
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadGateway, res)
 		return
 	}
 	validationErr := validate.Struct(&req)
 	if validationErr != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": validationErr.Error()})
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadGateway, res)
 		return
 	}
 	err := uc.CategoryService.UpdateCategory(&categoryID, &req)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadGateway, res)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"status": true, "message": "success"})
+	res := utils.NewHTTPResponse(http.StatusOK, "successful")
+	ctx.JSON(http.StatusBadGateway, res)
 }
 
 func (uc *CategoryController) DeleteCategory(ctx *gin.Context) {
 	var categoryID string = ctx.Param("categoryId")
 	err := uc.CategoryService.DeleteCategory(&categoryID)
 	if err != nil {
-		ctx.JSON(http.StatusBadGateway, gin.H{"message": err.Error()})
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadGateway, res)
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	res := utils.NewHTTPResponse(http.StatusOK, "successful")
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (categoryController *CategoryController) RegisterCategoryRoutes(rg *gin.RouterGroup) {

@@ -20,6 +20,12 @@ var (
 	categoryController controllers.CategoryController
 )
 
+var (
+	productService    services.ProductService
+	productCollection *mongo.Collection
+	productController controllers.ProductController
+)
+
 func main() {
 	err := godotenv.Load(".env")
 
@@ -39,6 +45,9 @@ func main() {
 	categoryService = services.NewCategoryServiceImpl(categoryCollection, ctx)
 	categoryController = controllers.NewCategoryController(categoryService)
 
+	productService = services.NewProductServiceImpl(productCollection, ctx)
+	productController = controllers.NewProductController(productService)
+
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -47,6 +56,7 @@ func main() {
 
 	basepath := server.Group("/v1")
 	categoryController.RegisterCategoryRoutes(basepath)
+	productController.RegisterProdutRoutes(basepath)
 
 	server.Run(":" + port)
 }
