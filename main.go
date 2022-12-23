@@ -26,6 +26,12 @@ var (
 	productController controllers.ProductController
 )
 
+var (
+	userService    services.UserService
+	userCollection *mongo.Collection
+	userController controllers.UserController
+)
+
 func main() {
 	err := godotenv.Load(".env")
 
@@ -41,12 +47,17 @@ func main() {
 	//db connection
 	mongoClient := database.DBinstance()
 	categoryCollection = mongoClient.Database("resturant").Collection("categories")
+	productCollection = mongoClient.Database("resturant").Collection("products")
+	userCollection = mongoClient.Database("resturant").Collection("users")
 
 	categoryService = services.NewCategoryServiceImpl(categoryCollection, ctx)
 	categoryController = controllers.NewCategoryController(categoryService)
 
 	productService = services.NewProductServiceImpl(productCollection, ctx)
 	productController = controllers.NewProductController(productService)
+
+	userService = services.NewUserServiceImpl(userCollection, ctx)
+	userController = controllers.NewUserController(userService)
 
 	if err != nil {
 		log.Fatal(err.Error())
@@ -57,6 +68,7 @@ func main() {
 	basepath := server.Group("/v1")
 	categoryController.RegisterCategoryRoutes(basepath)
 	productController.RegisterProdutRoutes(basepath)
+	userController.RegisterUserRoutes(basepath)
 
 	server.Run(":" + port)
 }

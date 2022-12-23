@@ -119,7 +119,7 @@ func (uc *ProductController) DeleteProduct(ctx *gin.Context) {
 }
 
 func (productController *ProductController) RegisterProdutRoutes(rg *gin.RouterGroup) {
-	productroute := rg.Group("/categories")
+	productroute := rg.Group("/products")
 	productroute.POST("/", productController.CreateProduct)
 	productroute.GET("/", productController.GetProducts)
 	productroute.GET("/:productId", productController.GetProduct)

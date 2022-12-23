@@ -88,7 +88,7 @@ func (uc *CategoryController) UpdateCategory(ctx *gin.Context) {
 	}
 	validationErr := validate.Struct(&req)
 	if validationErr != nil {
-		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		res := utils.NewHTTPResponse(http.StatusBadGateway, validationErr)
 		ctx.JSON(http.StatusBadGateway, res)
 		return
 	}
