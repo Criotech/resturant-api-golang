@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"time"
 
@@ -53,7 +53,7 @@ func GenerateAllTokens(email string, firstName string, lastName string, userType
 	return token, refreshToken, nil
 }
 
-func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
+func ValidateToken(signedToken string) (claims *SignedDetails, msg error) {
 	token, err := jwt.ParseWithClaims(
 		signedToken,
 		&SignedDetails{},
@@ -63,20 +63,18 @@ func ValidateToken(signedToken string) (claims *SignedDetails, msg string) {
 	)
 
 	if err != nil {
-		msg = err.Error()
+		msg = err
 		return
 	}
 
 	claims, ok := token.Claims.(*SignedDetails)
 	if !ok {
-		msg = fmt.Sprintf("the token is invalid")
-		msg = err.Error()
+		msg = errors.New("token is invalid")
 		return
 	}
 
 	if claims.ExpiresAt < time.Now().Local().Unix() {
-		msg = fmt.Sprintf("token is expired")
-		msg = err.Error()
+		msg = errors.New("token is expired")
 		return
 	}
 	return claims, msg

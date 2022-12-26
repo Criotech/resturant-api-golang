@@ -3,7 +3,6 @@ package services
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github/criotech/resturant-api/models"
 	"time"
 
@@ -47,8 +46,6 @@ func (p *UserServiceImpl) GetUserByEmail(email *string) (*models.User, error) {
 }
 
 func (p *UserServiceImpl) UpdateUserTokens(signedToken string, signedRefreshToken string, userId primitive.ObjectID) error {
-	fmt.Println(userId, "this is my id")
-
 	filter := bson.M{"_id": userId}
 	updated_at, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	update := bson.M{"$set": bson.M{"token": signedToken, "refresh_token": signedRefreshToken, "updated_at": updated_at}}

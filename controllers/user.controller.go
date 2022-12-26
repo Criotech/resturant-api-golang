@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	middleware "github/criotech/resturant-api/middlewares"
 	"github/criotech/resturant-api/models"
 	"github/criotech/resturant-api/services"
 	"github/criotech/resturant-api/types"
@@ -120,8 +121,17 @@ func (pc *UserController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, res)
 }
 
+func (pc *UserController) AuthRoute(ctx *gin.Context) {
+
+	ctx.JSON(http.StatusOK, gin.H{"success": "Access granted for api-2"})
+
+}
+
 func (userController *UserController) RegisterUserRoutes(rg *gin.RouterGroup) {
 	userroute := rg.Group("/users")
 	userroute.POST("/create", userController.CreateAccount)
 	userroute.POST("/login", userController.Login)
+
+	userroute.Use(middleware.Authenticate())
+	userroute.GET("/auth", userController.AuthRoute)
 }
