@@ -18,7 +18,8 @@ func NewHTTPResponse(status int, data interface{}) HTTPResponse {
 		http.StatusUnauthorized,
 		http.StatusForbidden,
 		http.StatusNotFound,
-		http.StatusRequestTimeout:
+		http.StatusRequestTimeout,
+		http.StatusBadGateway:
 
 		if e, ok := data.(error); ok {
 			return HTTPResponse{

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github/criotech/resturant-api/models"
 	"github/criotech/resturant-api/types"
 	"time"
@@ -42,24 +43,25 @@ func (p *ProductServiceImpl) CreateProduct(product *models.Product) (*mongo.Inse
 
 func (p *ProductServiceImpl) GetProducts(queries types.QueryProducts) ([]*models.Product, error) {
 	var products []*models.Product
+	fmt.Println(queries)
 
-	var filter bson.M
+	filter := bson.M{}
 
 	if queries.Category != "" {
-		filter = bson.M{
-			"price": bson.M{
-				"$gte": queries.MinPrice,
-				"$lte": queries.MaxPrice,
-			},
-			"category": queries.Category,
+		categoryID, err := primitive.ObjectIDFromHex(queries.Category)
+		if err != nil {
+			return nil, err
 		}
-	} else {
-		filter = bson.M{
-			"price": bson.M{
-				"$gte": queries.MinPrice,
-				"$lte": queries.MaxPrice,
-			},
-		}
+
+		filter["category_id"] = categoryID
+	}
+
+	if queries.MinPrice > 0 && queries.MaxPrice > 0 {
+		filter["price"] = bson.M{"$gte": queries.MinPrice, "$lte": queries.MaxPrice}
+	} else if queries.MinPrice > 0 {
+		filter["price"] = bson.M{"$gte": queries.MinPrice}
+	} else if queries.MaxPrice > 0 {
+		filter["price"] = bson.M{"$lte": queries.MaxPrice}
 	}
 
 	cursor, err := p.productCollection.Find(p.ctx, filter, options.Find().SetSkip(queries.Page).SetLimit(queries.Limit))
@@ -103,6 +105,7 @@ func (p *ProductServiceImpl) UpdateProduct(productID *string, product *types.Upd
 	if err != nil {
 		return err
 	}
+
 	filter := bson.M{"_id": objID}
 	updated_at, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	update := bson.M{"$set": bson.M{"name": product.Name, "description": product.Description, "price": product.Price, "quantity": product.Quantity, "updated_at": updated_at}}

@@ -32,6 +32,7 @@ func NewUserServiceImpl(userCollection *mongo.Collection, ctx context.Context) U
 func (c *UserServiceImpl) CreateAccount(product *models.User) (*mongo.InsertOneResult, error) {
 	product.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	product.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	product.Email_Verified = false
 	res, err := c.userCollection.InsertOne(c.ctx, product)
 	return res, err
 }

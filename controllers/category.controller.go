@@ -58,8 +58,8 @@ func (uc *CategoryController) GetCategory(ctx *gin.Context) {
 	var categoryID string = ctx.Param("categoryId")
 	category, err := uc.CategoryService.GetCategory(&categoryID)
 	if err != nil {
-		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
-		ctx.JSON(http.StatusBadGateway, res)
+		res := utils.NewHTTPResponse(http.StatusNotFound, err)
+		ctx.JSON(http.StatusNotFound, res)
 		return
 	}
 	res := utils.NewHTTPResponse(http.StatusOK, category)

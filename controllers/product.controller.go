@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	middleware "github/criotech/resturant-api/middlewares"
 	"github/criotech/resturant-api/models"
 	"github/criotech/resturant-api/services"
 	"github/criotech/resturant-api/types"
@@ -53,6 +54,14 @@ func (pc *ProductController) CreateProduct(ctx *gin.Context) {
 
 func (uc *ProductController) GetProduct(ctx *gin.Context) {
 	var productID string = ctx.Param("productId")
+
+	err := utils.CheckUserType(ctx, "ADMIN")
+	if err != nil {
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+
 	product, err := uc.ProductService.GetProduct(&productID)
 	if err != nil {
 		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
@@ -71,6 +80,7 @@ func (uc *ProductController) GetProducts(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
+
 	products, err := uc.ProductService.GetProducts(productQueries)
 	if err != nil {
 		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
@@ -83,7 +93,14 @@ func (uc *ProductController) GetProducts(ctx *gin.Context) {
 
 func (uc *ProductController) UpdateProduct(ctx *gin.Context) {
 	var req types.UpdateProductRequest
-	var productID string = ctx.Param("productID")
+	var productID string = ctx.Param("productId")
+
+	err := utils.CheckUserType(ctx, "ADMIN")
+	if err != nil {
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
@@ -96,7 +113,8 @@ func (uc *ProductController) UpdateProduct(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, res)
 		return
 	}
-	err := uc.ProductService.UpdateProduct(&productID, &req)
+
+	err = uc.ProductService.UpdateProduct(&productID, &req)
 	if err != nil {
 		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
 		ctx.JSON(http.StatusBadRequest, res)
@@ -108,7 +126,13 @@ func (uc *ProductController) UpdateProduct(ctx *gin.Context) {
 
 func (uc *ProductController) DeleteProduct(ctx *gin.Context) {
 	var productID string = ctx.Param("productId")
-	err := uc.ProductService.DeleteProduct(&productID)
+	err := utils.CheckUserType(ctx, "ADMIN")
+	if err != nil {
+		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
+		ctx.JSON(http.StatusBadRequest, res)
+		return
+	}
+	err = uc.ProductService.DeleteProduct(&productID)
 	if err != nil {
 		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
 		ctx.JSON(http.StatusBadRequest, res)
@@ -120,9 +144,11 @@ func (uc *ProductController) DeleteProduct(ctx *gin.Context) {
 
 func (productController *ProductController) RegisterProdutRoutes(rg *gin.RouterGroup) {
 	productroute := rg.Group("/products")
-	productroute.POST("/", productController.CreateProduct)
 	productroute.GET("/", productController.GetProducts)
 	productroute.GET("/:productId", productController.GetProduct)
+
+	productroute.Use(middleware.Authenticate())
+	productroute.POST("/", productController.CreateProduct)
 	productroute.PUT("/:productId", productController.UpdateProduct)
 	productroute.DELETE("/:productId", productController.DeleteProduct)
 }

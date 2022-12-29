@@ -32,6 +32,11 @@ var (
 	userController controllers.UserController
 )
 
+var (
+	fileUploadService    services.FileUploadService
+	fileUploadController controllers.FileUploadController
+)
+
 func main() {
 	err := godotenv.Load(".env")
 
@@ -59,6 +64,9 @@ func main() {
 	userService = services.NewUserServiceImpl(userCollection, ctx)
 	userController = controllers.NewUserController(userService)
 
+	fileUploadService = services.NewFileUpload()
+	fileUploadController = controllers.NewFileUploadController(fileUploadService)
+
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -69,6 +77,7 @@ func main() {
 	categoryController.RegisterCategoryRoutes(basepath)
 	productController.RegisterProdutRoutes(basepath)
 	userController.RegisterUserRoutes(basepath)
+	fileUploadController.RegisterFileUploadRoutes(basepath)
 
 	server.Run(":" + port)
 }

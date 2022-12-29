@@ -109,6 +109,8 @@ func (pc *UserController) Login(ctx *gin.Context) {
 	}
 
 	err = pc.UserService.UpdateUserTokens(token, refreshToken, user.ID)
+	user.Token = &token
+	user.Refresh_token = &refreshToken
 
 	if err != nil {
 		res := utils.NewHTTPResponse(http.StatusBadRequest, err)
