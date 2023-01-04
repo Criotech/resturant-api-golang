@@ -58,6 +58,7 @@ func (pc *UserController) CreateAccount(ctx *gin.Context) {
 	}
 
 	result, err := pc.UserService.CreateAccount(&user)
+
 	if err != nil {
 		res := utils.NewHTTPResponse(http.StatusBadGateway, err)
 		ctx.JSON(http.StatusBadGateway, res)
