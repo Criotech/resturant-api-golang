@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+    db:
+        image: mongo
+        ports:
+            - 27017:27017
+        volumes:
+            - ./storage/db:/data/db
+        environment:
+            MONGODB_URL: ${MONGODB_URL}
+        command: mongod --port 27017
+        restart: always
+    api:
+        build: '.'
+        container_name: resturant-api
+        links:
+            - db
+        depends_on: 
+            - db
+        ports:
+            - 9000:${PORT}
+        environment:
+            PORT: ${PORT}
+            MONGODB_URL: ${MONGODB_URL}
+            SECRET_KEY: ${SECRET_KEY}
+            CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+            CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+            CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+            CLOUDINARY_UPLOAD_FOLDER: ${CLOUDINARY_UPLOAD_FOLDER}
+        restart: always
