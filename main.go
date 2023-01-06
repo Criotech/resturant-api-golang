@@ -37,6 +37,12 @@ var (
 	fileUploadController controllers.FileUploadController
 )
 
+var (
+	orderService    services.OrderService
+	orderCollection *mongo.Collection
+	orderController controllers.OrderController
+)
+
 func main() {
 	err := godotenv.Load(".env")
 
@@ -67,6 +73,9 @@ func main() {
 	fileUploadService = services.NewFileUpload()
 	fileUploadController = controllers.NewFileUploadController(fileUploadService)
 
+	orderService = services.NewOrderServiceImpl(orderCollection, ctx)
+	orderController = controllers.NewOrderController(orderService)
+
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -78,6 +87,7 @@ func main() {
 	productController.RegisterProdutRoutes(basepath)
 	userController.RegisterUserRoutes(basepath)
 	fileUploadController.RegisterFileUploadRoutes(basepath)
+	orderController.RegisterOrderRoutes(basepath)
 
 	server.Run(":" + port)
 }

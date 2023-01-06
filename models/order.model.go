@@ -18,6 +18,7 @@ type Order struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
 	CustomerId   primitive.ObjectID `json:"customer_id" validate:"required"`
 	OrderedItems []OrderedItem      `json:"ordered_items"`
+	Status       string             `json:"status"`
 	TotalPrice   int64              `json:"total_price" validate:"required"`
 	Created_at   time.Time          `json:"created_at"`
 	Updated_at   time.Time          `json:"updated_at"`
